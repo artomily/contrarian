@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Contrarian
+
+**The AI Agent That Challenges Every Onchain Decision Before It Becomes a Transaction.**
+
+---
+
+## Problem
+
+Humans are biased. In crypto, this leads to:
+
+```
+FOMO → Swap → Loss
+Influencer Tweet → Buy → Loss
+Panic → Sell → Market Rebound
+```
+
+There is no system that actively argues against a user's decision before it executes onchain.
+
+---
+
+## Solution
+
+Contrarian is a **Decision Firewall for Onchain Actions**.
+
+Instead of helping users confirm decisions, Contrarian actively searches for reasons why they may be wrong.
+
+Contrarian is not an advisor. Contrarian is not a copilot. Contrarian is a **Red Team Agent**.
+
+---
+
+## Innovation
+
+Rather than "helping me decide" like every other AI tool, Contrarian asks:
+
+> "Why is this a bad idea?"
+
+It deploys 4 review lenses against every transaction intent:
+
+| Lens | Role |
+|------|------|
+| **Risk Analyst** | Finds downside |
+| **Market Skeptic** | Challenges assumptions |
+| **Opportunity Cost** | Identifies better alternatives |
+| **Behavioral Psychologist** | Detects emotional decisions |
+
+---
+
+## How It Works
+
+1. **Input** — User drafts a transaction (e.g., Swap 500 USDC → XYZ)
+2. **Analyze** — Contrarian runs 4 independent lenses against the intent
+3. **Review** — Scores rendered as a threat analysis dashboard
+4. **Decide** — User chooses: Execute or Cancel
+
+---
+
+## Why Arbitrum
+
+Fast and low-cost transaction review before execution.
+
+---
+
+## Tech Stack
+
+- **Next.js 16** — App Router with React Server Components
+- **Tailwind CSS v4** — Utility-first CSS
+- **shadcn/ui** — Accessible UI primitives
+- **Framer Motion** — Page load and score animations
+- **wagmi + viem** — Wallet connection and onchain execution
+
+---
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Demo Flow
 
-## Learn More
+```
+Create Transaction → Contrarian Review → Warning → Execute / Cancel
+```
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Approximately 2 minutes end-to-end.
