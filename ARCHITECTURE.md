@@ -1,6 +1,6 @@
 # Architecture
 
-Contrarian is a single-page Next.js (App Router) client application. There is no server
+Contrarian is a Next.js (App Router) client application. There is no server
 state and no database — the "AI" is a deterministic mock. This document explains how the
 pieces fit together so a new contributor (human or agent) can navigate quickly.
 
@@ -8,13 +8,18 @@ pieces fit together so a new contributor (human or agent) can navigate quickly.
 
 ```
 app/layout.tsx  ──► <Providers> (wagmi + react-query)
-                      └─► app/page.tsx  ── the only route
+                      ├─► app/page.tsx ............ marketing landing (hero, mock review, lenses)
+                      ├─► app/docs/page.tsx ........ documentation (server component, sidebar TOC)
+                      └─► app/dashboard/page.tsx ... the app experience
                             │
                             ├─ idle ........  <Hero>      (orb + greeting + prompt + chips)
                             └─ active ......  <Workspace> (conversation + analysis + sidebar)
 ```
 
-`app/page.tsx` owns no business logic itself — it reads state from the
+The landing and docs pages share `<SiteHeader>` / `<SiteFooter>`; the dashboard keeps its
+own header (it carries `<WalletButton>`). `<BrandMark>` is the shared logo lockup.
+
+`app/dashboard/page.tsx` owns no business logic itself — it reads state from the
 `useContrarianAnalysis()` hook and swaps between two views based on whether any messages
 exist. The transition between the two views is animated (the orb shrinks from hero centre
 to a compact workspace marker).
@@ -71,6 +76,9 @@ Risk Analyst · Market Skeptic · Opportunity Cost · Behavioral Psychologist.
 
 | Component | Role |
 |---|---|
+| `components/brand-mark.tsx` | Logo lockup (icon + wordmark), shared by all headers. |
+| `components/site-header.tsx` | Sticky marketing nav (landing + docs) with Launch App CTA. |
+| `components/site-footer.tsx` | Marketing footer with links + demo disclaimer. |
 | `components/orb.tsx` | Signature animated rose/red sphere. Size-configurable; reused at hero + workspace scale. |
 | `components/prompt-bar.tsx` | Shared rounded "Ask anything" input (waveform affordance + send). |
 | `components/hero.tsx` | Idle landing: orb, greeting, headline, prompt, quick-action chips. |

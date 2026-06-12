@@ -15,6 +15,9 @@ Apple-Intelligence-style **hero takeover** in Contrarian's rose/red identity, de
 - [x] Restyle analysis cards / verdict for the premium dark surface
 - [x] Center vignette glow, thin scrollbar, motion polish in `globals.css`
 - [x] Verify in browser at desktop width; `npm run build` clean
+- [x] Marketing **landing page** at `/` (hero, mock review, stats, lenses, CTA, footer)
+- [x] **Docs page** at `/docs` (sidebar TOC, lifecycle, lenses & scoring, actions table, FAQ)
+- [x] App experience moved to `/dashboard` (shared `BrandMark`, links to home/docs)
 
 ## Foundation (already in place)
 

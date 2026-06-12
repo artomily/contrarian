@@ -36,8 +36,11 @@ There is no test suite. Verify visually with the dev server and `npm run build`.
 
 ## Where things live
 
-- `app/page.tsx` — orchestrates the experience: **hero takeover** when idle, **workspace**
+- `app/page.tsx` — marketing **landing page** (hero, mock review, lenses, CTA).
+- `app/docs/page.tsx` — **documentation** (server component, sidebar TOC).
+- `app/dashboard/page.tsx` — the app: **hero takeover** when idle, **workspace**
   (conversation + analysis + activity sidebar) once a review starts.
+- `components/site-header.tsx` / `site-footer.tsx` / `brand-mark.tsx` — shared site chrome.
 - `app/layout.tsx` — root layout, fonts (`Geist`/`Geist Mono`), forces `dark`.
 - `app/providers.tsx` — wagmi + react-query providers.
 - `hooks/use-contrarian-analysis.ts` — the state machine for the review lifecycle.

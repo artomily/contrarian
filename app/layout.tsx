@@ -14,7 +14,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Contrarian — Decision Firewall",
+  title: {
+    default: "Contrarian — Decision Firewall",
+    template: "%s — Contrarian",
+  },
   description:
     "The AI agent that challenges every onchain decision before it becomes a transaction.",
 };
@@ -25,7 +28,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased motion-safe:scroll-smooth`}
     >
       <body className="min-h-full bg-background text-foreground">
         <Providers>{children}</Providers>
