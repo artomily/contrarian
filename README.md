@@ -26,7 +26,21 @@ Influencer Tweet    → Buy    → Loss
 Panic               → Sell   → Market Rebound
 ```
 
-There is no system that actively argues **against** a user's decision before it executes onchain. Wallets ask *"Confirm?"* — but nobody asks *"Are you sure, and here's why you might not be?"*
+But the deeper problem isn't just bias — **it's information blindness at the moment of action.**
+
+When a user is about to execute an onchain transaction, they almost never have the full picture:
+
+| What the user sees | What they don't see |
+|--------------------|---------------------|
+| "Swap 100 USDC → SOL" | Gas fee is 5× higher than usual due to network congestion |
+| The confirm button | Liquidity pool depth is below $50K — their order will move the price against them |
+| A token that's up 30% today | It's up 340% in 24 hours — classic pump pattern, likely to dump |
+| A DeFi protocol offering 80% APY | The contract is unaudited and the yield is funded by inflationary emissions |
+| A staking option | A better-yielding validator is available with zero commission |
+
+Wallets ask *"Confirm?"* — but nobody asks *"Are you sure, and here's why you might not be?"*
+
+There is no system that actively argues **against** a user's decision before it executes onchain. The moment you sign, it's final. Irreversible. And most users only find out the risks after the money has already moved.
 
 ## Solution
 

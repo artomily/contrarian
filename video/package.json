@@ -1,0 +1,26 @@
+{
+  "name": "contrarian-video",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render DemoVideo out/contrarian-demo.mp4 --crf 18",
+    "capture": "node capture.mjs",
+    "audio": "node generate-audio.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.290",
+    "@remotion/google-fonts": "4.0.290",
+    "lucide-react": "^0.456.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.290"
+  },
+  "devDependencies": {
+    "@remotion/fonts": "^4.0.290",
+    "@types/react": "18.3.12",
+    "geist": "^1.7.2",
+    "puppeteer-core": "^23.0.0",
+    "typescript": "^5.6.0"
+  }
+}
