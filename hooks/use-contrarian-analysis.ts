@@ -1,12 +1,68 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import type { Hex } from "viem";
+import {
+  getAccount,
+  switchChain,
+  waitForTransactionReceipt,
+  writeContract,
+} from "wagmi/actions";
 import {
   type DecisionIntent,
   type AnalysisResult,
   parseIntent,
   runFullAnalysis,
 } from "@/lib/mock-analysis";
+import { config } from "@/lib/wagmi";
+import {
+  CONTRARIAN_GUARD_ABI,
+  GUARD_ADDRESS,
+  GUARD_CHAIN,
+  guardIsConfigured,
+  intentHash,
+  Outcome,
+  toScore,
+  Verdict,
+} from "@/lib/contrarian-guard";
+
+/**
+ * Record an executed decision on-chain via ContrarianGuard. Returns the real tx
+ * hash. Throws if the guard isn't configured or no wallet is connected — callers
+ * fall back to a simulated hash so the demo still works offline.
+ */
+async function recordExecutionOnChain(
+  intent: DecisionIntent,
+  result: AnalysisResult,
+): Promise<Hex> {
+  if (!guardIsConfigured()) throw new Error("guard-not-configured");
+
+  const account = getAccount(config);
+  if (!account.isConnected) throw new Error("wallet-not-connected");
+
+  if (account.chainId !== GUARD_CHAIN.id) {
+    await switchChain(config, { chainId: GUARD_CHAIN.id });
+  }
+
+  const hash = await writeContract(config, {
+    address: GUARD_ADDRESS as Hex,
+    abi: CONTRARIAN_GUARD_ABI,
+    functionName: "recordDecision",
+    chainId: GUARD_CHAIN.id,
+    args: [
+      intentHash(intent.summary),
+      toScore(result.risk.score),
+      toScore(result.fomo.score),
+      toScore(result.opportunity.score),
+      toScore(result.behavioral.score),
+      result.verdict === "RECONSIDER" ? Verdict.RECONSIDER : Verdict.PROCEED,
+      Outcome.EXECUTED,
+    ],
+  });
+
+  await waitForTransactionReceipt(config, { hash, chainId: GUARD_CHAIN.id });
+  return hash;
+}
 
 type ChatMessage =
   | {
@@ -105,59 +161,76 @@ export function useContrarianAnalysis() {
     }
   }, []);
 
-  const execute = useCallback(
-    (messageId: string) => {
-      const hash = `0x${Math.random().toString(16).slice(2, 42)}`;
+  const execute = useCallback((messageId: string) => {
+    const msg = messagesRef.current.find((m) => m.id === messageId);
+    if (
+      !msg ||
+      msg.role !== "contrarian" ||
+      msg.phase !== "complete" ||
+      !msg.result
+    )
+      return;
 
-      // Pure update: flip the matching message to "executing".
+    const { intent, result } = msg;
+
+    // Flip to "executing" while the transaction is in flight.
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === messageId
+          ? ({ ...m, phase: "executing" } as ChatMessage)
+          : m
+      )
+    );
+
+    const finish = (txHash: string) => {
       setMessages((prev) =>
         prev.map((m) =>
-          m.id === messageId &&
-          m.role === "contrarian" &&
-          m.phase === "complete" &&
-          m.result
-            ? ({ ...m, phase: "executing", txHash: hash } as ChatMessage)
+          m.id === messageId
+            ? ({ ...m, phase: "executed", txHash } as ChatMessage)
             : m
         )
       );
+      setHistory((hist) => [
+        {
+          id: Math.random().toString(36).slice(2, 9),
+          intent,
+          result,
+          decision: "EXECUTED",
+          txHash,
+          timestamp: Date.now(),
+        },
+        ...hist,
+      ]);
+    };
 
-      setTimeout(() => {
-        // Read the message from fresh state, then issue two independent pure
-        // updates so neither one's updater triggers a side effect.
-        const msg = messagesRef.current.find((m) => m.id === messageId);
-        if (
-          !msg ||
-          msg.role !== "contrarian" ||
-          msg.phase !== "executing" ||
-          !msg.result
-        )
+    // Try the real on-chain record; fall back to a simulated hash so the demo
+    // works with no contract deployed / no wallet connected.
+    recordExecutionOnChain(intent, result)
+      .then(finish)
+      .catch((err) => {
+        const reason = err instanceof Error ? err.message : String(err);
+        const simulable =
+          reason === "guard-not-configured" || reason === "wallet-not-connected";
+
+        if (simulable) {
+          const fakeHash = `0x${Array.from({ length: 64 }, () =>
+            Math.floor(Math.random() * 16).toString(16)
+          ).join("")}`;
+          setTimeout(() => finish(fakeHash), 1500);
           return;
+        }
 
-        const { intent, result, txHash } = msg;
-
+        // A real failure (user rejected the signature, tx reverted, wrong
+        // network, etc.) — revert to "complete" so the user can decide again.
         setMessages((prev) =>
           prev.map((m) =>
-            m.id === messageId
-              ? ({ ...m, phase: "executed" } as ChatMessage)
+            m.id === messageId && m.role === "contrarian"
+              ? ({ ...m, phase: "complete" } as ChatMessage)
               : m
           )
         );
-
-        setHistory((hist) => [
-          {
-            id: Math.random().toString(36).slice(2, 9),
-            intent,
-            result,
-            decision: "EXECUTED",
-            txHash,
-            timestamp: Date.now(),
-          },
-          ...hist,
-        ]);
-      }, 2000);
-    },
-    []
-  );
+      });
+  }, []);
 
   const cancel = useCallback(
     (messageId: string) => {
